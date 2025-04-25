@@ -1,0 +1,295 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  list-style: none;
+}
+
+.navbar-1 {
+  background-color: rgb(32, 28, 28);
+  color: white;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  height: 60px;
+  padding: 0 10%;
+}
+
+.navbar-1 div {
+  font-size: 28px;
+  width: 100%;
+  text-align: center;
+}
+.navbar-1 .left {
+  display: flex;
+}
+
+.navbar-1 button {
+  padding: 10px 20px;
+  margin-right: 1rem;
+  border-radius: 10px;
+  border: 0;
+  outline: 0;
+  font-size: 18px;
+}
+.success-message-container {
+  position: absolute;
+  top: 70px; /* adjust depending on your navbar height */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: 500px;
+  text-align: center;
+}
+
+
+.navbar-2 {
+  background-color: white;
+  width: 100%;
+  height: 70px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10%;
+  box-shadow: 0px 1px 1px black;
+}
+.navbar-2 .left {
+  display: flex;
+}
+
+.navbar-2 button {
+  padding: 8px 18px;
+  border-radius: 10px;
+  /* display: flex; */
+  border: 0;
+  outline: 0;
+  font-size: 16px;
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+.navbar-2 input {
+  width: 100%;
+  font-size: 15px;
+  padding: 10px 20px;
+}
+
+.shift-container {
+  max-width: 700px;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.form-row label {
+  width: 45%;
+  font-weight: bold;
+}
+
+.input-pair {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+}
+
+input,
+select,
+textarea {
+  padding: 6px 10px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: none;
+  height: 50px;
+}
+
+.required {
+  color: red;
+}
+
+/* working */
+
+.working-hours-section {
+  max-width: 700px;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  border-top: 1px solid #ddd;
+}
+
+h4 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+label {
+  width: 260px;
+  font-weight: 500;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+input[type="time"],
+input[type="number"],
+input[type="text"] {
+  padding: 6px 10px;
+  font-size: 14px;
+  width: 150px;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.2);
+  margin-left: 5px;
+}
+
+label {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.required {
+  color: red;
+}
+
+/* accordian */
+
+.accordion-button {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.accordion-body {
+  background-color: #fff;
+}
+
+input[type="checkbox"] {
+  /* transform: scale(1.2); */
+  margin-right: 8px;
+}
+
+/*  */
+.input-pair {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.input-pair input {
+  flex: 1;
+  min-width: 100px;
+}
+
+/* Form Row and Input Wrapper */
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.form-row label {
+  min-width: 250px;
+  font-weight: 600;
+}
+
+.input-wrapper {
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+}
+
+.input-wrapper input:disabled {
+  background-color: #f1f3f5;
+  cursor: not-allowed;
+}
+.input-wrapper input[type="checkbox"] {
+  width: 4%;
+}
+
+/* Adjusting the structure */
+.row {
+  margin-bottom: 1.5rem;
+}
+
+/* Ensure all labels are aligned properly */
+.col-form-label {
+  font-weight: 600;
+}
+
+.form-check-label {
+  font-weight: 600;
+}
+
+/* Aligning checkbox inputs */
+.form-check {
+  display: flex;
+  align-items: center;
+}
+
+.col-sm-2 {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.form-select {
+  width: 100%;
+}
+.accordion{
+  /* background-color: rgb(80, 80, 22); */
+  width: 700px;
+}
+
+/* Add margin to nested accordion */
+.accordion-item {
+  margin-top: 1rem;
+}
+
+.accordion-header button {
+  padding: 0.75rem 1.25rem;
+}
+
+/* Ensuring form fields are aligned properly within their columns */
+.input-wrapper input,
+.input-wrapper select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+}
+
+.input-wrapper input:disabled,
+.input-wrapper select:disabled {
+  background-color: #f1f3f5;
+  cursor: not-allowed;
+}
+

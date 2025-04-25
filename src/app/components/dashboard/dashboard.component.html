@@ -1,0 +1,196 @@
+<!-- Navbar 1 -->
+<div class="navbar-1">
+  <div>Department</div>
+</div>
+
+<div class="success-message-container" *ngIf="successMessage">
+  <div class="alert alert-success fade show" role="alert">
+    {{ successMessage }}
+  </div>
+</div>
+
+<!-- Navbar 2 -->
+<div class="navbar-2">
+  <div class="left">
+    <button (click)="newBtn()">New</button>
+    <!-- ✅ Bootstrap Alert -->
+
+    <!-- ✅ Submit Button with Bootstrap Styling -->
+    <button
+      type="submit"
+      (click)="onSubmit()"
+      [disabled]="!isNewMode && !isEditMode"
+    >
+      Save
+    </button>
+
+    <button routerLink="/menu">Cancel</button>
+    <button (click)="refreshBtn()">Refresh</button>
+  </div>
+  <div class="right">
+    <input
+      style="font-size: 17px"
+      type="text"
+      placeholder="Search..."
+      [(ngModel)]="searchTerm"
+      (input)="filterUsers()"
+    />
+  </div>
+</div>
+
+<!-- Form and Table Container -->
+<div class="form-container">
+  <!-- Left Form -->
+  <div class="left-form">
+    <form #myForm="ngForm">
+      <!-- ID Field with Suggestions -->
+
+      <div class="form-group">
+        <label for="id">ID <span>*</span></label>
+        <input
+          type="text"
+          id="id"
+          name="id"
+          #idInputRef
+          [(ngModel)]="idInput"
+          (input)="onIdInputChange()"
+          (keydown)="onKeyDown($event)"
+          required
+          [disabled]="isNewMode"
+          placeholder="ID"
+        />
+
+        <ul *ngIf="suggestions.length > 0" class="suggestion-box">
+          <li
+            *ngFor="let suggestion of suggestions"
+            (click)="selectSuggestion(suggestion)"
+          >
+            <!-- {{ suggestion.id }} - {{ suggestion.name }} -->
+          </li>
+        </ul>
+      </div>
+
+      <!-- Name -->
+      <div class="form-group">
+        <label for="name">Name <span>*</span></label>
+        <!-- Example for Name -->
+        <input
+          type="text"
+          id="name"
+          name="name"
+          #nameInputRef
+          [(ngModel)]="formData.name"
+          required
+          placeholder="Name"
+          [disabled]="!isEditMode && !isNewMode"
+        />
+      </div>
+
+      <!-- Code -->
+      <div class="form-group">
+        <label for="code">Code <span>*</span></label>
+        <input
+          type="text"
+          id="code"
+          name="code"
+          [(ngModel)]="formData.code"
+          placeholder="6 char Code"
+          maxlength="6"
+          required
+          [disabled]="!isNewMode && !isEditMode"
+        />
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="formData.email"
+          placeholder="Email"
+          [disabled]="!isNewMode && !isEditMode"
+        />
+      </div>
+
+      <!-- Set As Default -->
+      <div class="form-group">
+        <label for="setAsDefault">Set As Default</label>
+        <input
+          type="checkbox"
+          id="setAsDefault"
+          name="setAsDefault"
+          [(ngModel)]="formData.setAsDefault"
+          [disabled]="!isNewMode && !isEditMode"
+        />
+      </div>
+
+      <!-- Short Name -->
+      <div class="form-group">
+        <label for="shortName">Short Name</label>
+        <input
+          type="text"
+          id="shortName"
+          name="shortName"
+          [(ngModel)]="formData.shortName"
+          [disabled]="!isNewMode && !isEditMode"
+        />
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          [(ngModel)]="formData.description"
+          [disabled]="!isNewMode && !isEditMode"
+          placeholder="250 Chars"
+        ></textarea>
+      </div>
+    </form>
+  </div>
+
+  <!-- Right Table Section -->
+  <div class="right-search">
+    <table class="custom-table mt-3">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let user of paginatedUsers"
+          (click)="selectRow(user)"
+          style="cursor: pointer"
+        >
+          <td class="text-center">{{ user.id }}</td>
+          <td>{{ user.name }}</td>
+          <td class="text-center">
+            <button
+              (click)="deleteUser(user.id); $event.stopPropagation()"
+              class="deleteBtn"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination-controls">
+      <button (click)="previousPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,75 @@
+/* Center the form on the page */
+.register-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f1f1f1;
+}
+
+/* Form box */
+.register-box {
+  background-color: #ffffff;
+  padding: 30px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.register-box h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* Form fields */
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+input {
+  width: 90%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  border-color: #007bff;
+}
+
+/* Button styling */
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.custom-alert {
+  max-width: 400px;
+  width: 100%;
+  transition: opacity 0.3s ease-in-out;
+  opacity: 1;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+button:hover {
+  background-color: #0056b3;
+}

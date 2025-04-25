@@ -1,0 +1,697 @@
+<!-- Navbar 1 -->
+<div class="navbar-1">
+  <div>Shift Configuration</div>
+</div>
+
+<div
+  *ngIf="successMessage"
+  class="alert alert-success fade show mt-2 success-message-container"
+  role="alert"
+  style="max-width: 500px; margin: 0 auto; text-align: center"
+>
+  {{ successMessage }}
+</div>
+
+<div
+  *ngIf="showAlert"
+  class="alert alert-{{ alertType }} alert-dismissible fade show w-auto mx-auto"
+  role="alert"
+  style="text-align: center"
+>
+  {{ alertMessage }}
+</div>
+
+<div class="navbar-2">
+  <div class="left">
+    <button (click)="onNew()">New</button>
+    <!-- ✅ Bootstrap Success Alert -->
+
+    <!-- ✅ Bootstrap Save Button -->
+    <button type="button" (click)="Save()">Save</button>
+
+    <button routerLink="/menu">Cancel</button>
+    <button (click)="refreshBtn()">Refresh</button>
+  </div>
+  <div class="right">
+    <!-- <input type="text" placeholder="Search..." /> -->
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="filterList()"
+      placeholder="Search..."
+      class="form-control"
+      style="max-width: 300px; display: inline-block; margin-bottom: 10px"
+    />
+  </div>
+</div>
+
+<!-- shifts-->
+
+<div
+  class="container1"
+  style="
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    margin-top: 1rem;
+    gap: 20px;
+  "
+>
+  <div class="left" style="width: 50%; background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+    <div class="shift-container">
+      <!-- Shift ID and Name Row -->
+      <div class="form-row">
+        <label>Shift <span class="required">*</span></label>
+        <div class="form-field input-pair">
+          <input
+            #shiftId
+            type="text"
+            placeholder="ID"
+            [(ngModel)]="shift.Id"
+            (keydown)="onShiftIdKeyDown($event)"
+            [disabled]="false"
+          />
+          <input
+            type="text"
+            placeholder="Name"
+            [(ngModel)]="shift.Name"
+            [disabled]="false"
+          />
+        </div>
+      </div>
+
+      <!-- Shift Description -->
+      <div class="form-row" style="width: 100%">
+        <label style="width: 45%">Shift Description</label>
+        <div class="form-field" style="width: 45%">
+          <textarea
+            placeholder="255 Chars"
+            [(ngModel)]="shift.Description"
+            [disabled]="disableFields"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Shift Type -->
+      <div class="form-row">
+        <label>Shift Type</label>
+        <div class="form-field">
+          <select [(ngModel)]="shift.Type" [disabled]="disableFields">
+            <option value="Normal">Normal</option>
+            <option value="Flexible">Field Break</option>
+            <option value="Night">Rest Day</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Shift Timings -->
+      <div class="form-row">
+        <label>Shift Timings <span class="required">*</span></label>
+        <div class="form-field input-pair">
+          <input
+            type="time"
+            [(ngModel)]="shift.StartTime"
+            [disabled]="disableFields"
+            (change)="calculateDuration()"
+          />
+          <input
+            type="time"
+            [(ngModel)]="shift.EndTime"
+            [disabled]="disableFields"
+            (change)="calculateDuration()"
+          />
+          <input
+            type="text"
+            placeholder="00:00"
+            [(ngModel)]="shift.Duration"
+            readonly
+            [disabled]="disableFields"
+          />
+        </div>
+      </div>
+
+      <!-- Attendance Calculation Type -->
+      <div class="form-row">
+        <label>Attendance Calculation Type</label>
+        <div class="form-field">
+          <select [(ngModel)]="shift.AttendanceType" [disabled]="disableFields">
+            <option value="Shift-Based">Shift-Based</option>
+            <option value="Actual-Time">Custom Work Hours</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKING hours -->
+    <div class="accordion" id="workingHoursAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseOne"
+            aria-expanded="false"
+            aria-controls="collapseOne"
+          >
+            Minimum Required Working Hours
+          </button>
+        </h2>
+
+        <div
+          id="collapseOne"
+          class="accordion-collapse collapse"
+          aria-labelledby="headingOne"
+          data-bs-parent="#workingHoursAccordion"
+        >
+          <div class="accordion-body">
+            <!-- Your original section starts here -->
+            <div class="working-hours-section">
+              <!-- Half Day Hours -->
+              <div class="form-row">
+                <label>For Half Day <span class="required">*</span></label>
+                <div class="input-wrapper">
+                  <input
+                    type="time"
+                    [(ngModel)]="workingHours.HalfDay"
+                    [disabled]="disableFields"
+                  />
+                </div>
+              </div>
+
+              <!-- Full Day Hours -->
+              <div class="form-row">
+                <label>For Full Day <span class="required">*</span></label>
+                <div class="input-wrapper">
+                  <input
+                    type="time"
+                    [(ngModel)]="workingHours.FullDay"
+                    [disabled]="disableFields"
+                  />
+                </div>
+              </div>
+
+              <!-- Minimum Hours Required Toggle -->
+              <div class="form-row">
+                <label>Minimum Hours Required Within Shift Duration</label>
+                <div class="input-wrapper">
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="workingHours.MinHoursRequired"
+                    [disabled]="disableFields"
+                  />
+                </div>
+              </div>
+
+              <!-- Deviation Start -->
+              <div class="form-row">
+                <label>Deviation From Shift Start (Min)</label>
+                <div class="input-wrapper">
+                  <input
+                    type="text"
+                    [(ngModel)]="workingHours.DeviationStart"
+                    [disabled]="disableFields || !workingHours.MinHoursRequired"
+                    (keypress)="allowOnlyNumbers($event)"
+                    (input)="validateRange()"
+                  />
+                </div>
+              </div>
+
+              <!-- Deviation End -->
+              <div class="form-row">
+                <label>Deviation From Shift End (Min)</label>
+                <div class="input-wrapper">
+                  <input
+                    type="text"
+                    [(ngModel)]="workingHours.DeviationEnd"
+                    [disabled]="disableFields || !workingHours.MinHoursRequired"
+                    (keypress)="allowOnlyNumbers($event)"
+                    (input)="validateRange()"
+                  />
+                </div>
+              </div>
+
+              <!-- Shift Allowance Checkbox -->
+              <div class="form-row">
+                <label>Shift Allowance</label>
+                <div class="input-wrapper">
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="workingHours.ShiftAllowance"
+                    [disabled]="disableFields"
+                  />
+                </div>
+              </div>
+            </div>
+            <!-- Your original section ends here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- accordian -->
+
+    <!-- Outer Accordion: Break Details -->
+    <div class="accordion" id="outerAccordion">
+      <div class="accordion-item border">
+        <h2
+          class="accordion-header collapsed"
+          id="breakDetailsHeading"
+          style="padding: 10px"
+        >
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#breakDetailsCollapse"
+            aria-expanded="false"
+            aria-controls="breakDetailsCollapse"
+          >
+            Break Details
+          </button>
+        </h2>
+
+        <div
+          id="breakDetailsCollapse"
+          class="accordion-collapse collapse"
+          aria-labelledby="breakDetailsHeading"
+          data-bs-parent="#outerAccordion"
+        >
+          <div class="accordion-body">
+            <!-- Break Timings -->
+            <div class="row mb-3 align-items-center">
+              <label class="col-sm-3 col-form-label" style="width: 41%"
+                >Break Timings</label
+              >
+              <div class="col-sm-7">
+                <div class="d-flex gap-3">
+                  <input
+                    type="time"
+                    class="form-control"
+                    [(ngModel)]="breakDetails.BreakStart"
+                    title="Start Time"
+                    [disabled]="disableFields"
+                  />
+                  <input
+                    type="time"
+                    class="form-control"
+                    [(ngModel)]="breakDetails.BreakEnd"
+                    title="End Time"
+                    [disabled]="disableFields"
+                  />
+                  <input
+                    type="text"
+                    class="form-control"
+                    readonly
+                    [value]="breakDetails.BreakDuration"
+                    [disabled]="disableFields"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Break Deviation Allowed -->
+            <div class="row mb-4 align-items-center">
+              <label class="col-sm-3 col-form-label" style="width: 41%"
+                >Break Deviation Allowed</label
+              >
+              <div class="col-sm-3">
+                <input
+                  type="checkbox"
+                  style="width: 10%"
+                  [(ngModel)]="breakDetails.DeviationAllowed"
+                  [disabled]="disableFields"
+                />
+              </div>
+            </div>
+
+            <!-- Advanced Details (Nested Accordion) -->
+            <div class="accordion mb-2" id="nestedAccordion1">
+              <div class="accordion-item border-top">
+                <h2 class="accordion-header" id="advancedHeading">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#advancedCollapse"
+                    aria-expanded="false"
+                    aria-controls="advancedCollapse"
+                  >
+                    Advanced Details
+                  </button>
+                </h2>
+
+                <div
+                  id="advancedCollapse"
+                  class="accordion-collapse collapse"
+                  aria-labelledby="advancedHeading"
+                  data-bs-parent="#nestedAccordion1"
+                >
+                  <div class="accordion-body">
+                    <!-- Checkboxes -->
+                    <div
+                      class="row mb-3 align-items-center"
+                      style="margin: 10px"
+                    >
+                      <label class="col-sm-6 col-form-label" style="width: 35%">
+                        Add Break Late-IN In Total Late-IN
+                      </label>
+                      <div class="col-sm-2">
+                        <input
+                          type="checkbox"
+                          [(ngModel)]="breakDetails.AddLateIn"
+                          [disabled]="disableFields"
+                        />
+                      </div>
+                    </div>
+
+                    <div
+                      class="row mb-3 align-items-center"
+                      style="margin: 10px"
+                    >
+                      <label class="col-sm-6 col-form-label" style="width: 35%">
+                        Add Break Early-OUT In Total Early-OUT
+                      </label>
+                      <div class="col-sm-2">
+                        <input
+                          type="checkbox"
+                          [(ngModel)]="breakDetails.AddEarlyOut"
+                          [disabled]="disableFields"
+                        />
+                      </div>
+                    </div>
+
+                    <!-- Deduct Break From Working Hours -->
+                    <div class="pt-3 border-top" style="margin: 10px">
+                      <h6 class="fw-bold mb-3 mt-3">
+                        Deduct Break From Working Hours
+                      </h6>
+
+                      <div class="row mb-3 align-items-center">
+                        <label
+                          class="col-sm-5 col-form-label"
+                          style="width: 35%"
+                          >Deduction Type For 2 Punch</label
+                        >
+                        <div class="col-sm-2 text-end">
+                          <input
+                            type="checkbox"
+                            [(ngModel)]="breakDetails.Deduct2Punch"
+                            [disabled]="disableFields"
+                          />
+                        </div>
+
+                        <div class="col-sm-5">
+                          <select
+                            class="form-select"
+                            [(ngModel)]="breakDetails.Deduct2PunchType"
+                            [disabled]="!breakDetails.Deduct2Punch"
+                          >
+                            <option value="configured">
+                              Configured Break Duration
+                            </option>
+                            <option value="actual">
+                              Actual Break Duration
+                            </option>
+                            <option value="exceeding">
+                              Time Exceeding Break Duration
+                            </option>
+                            <option value="configuredOrActual">
+                              Configured Break If Less, Else Actual Break
+                              Duration
+                            </option>
+                            <option value="custom">
+                              Custom Break Deduction
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="row mb-3 align-items-center">
+                        <label
+                          class="col-sm-5 col-form-label"
+                          style="width: 35%"
+                          >Deduction Type For 2+ Punch</label
+                        >
+                        <div class="col-sm-2 text-end">
+                          <input
+                            type="checkbox"
+                            [(ngModel)]="breakDetails.Deduct2PlusPunch"
+                            [disabled]="disableFields"
+                          />
+                        </div>
+
+                        <div class="col-sm-5">
+                          <select
+                            class="form-select"
+                            [(ngModel)]="breakDetails.Deduct2PlusPunchType"
+                            [disabled]="!breakDetails.Deduct2PlusPunch"
+                          >
+                            <option value="configured">
+                              Configured Break Duration
+                            </option>
+                            <option value="actual">
+                              Actual Break Duration
+                            </option>
+                            <option value="exceeding">
+                              Time exceeding Break Duration
+                            </option>
+                            <option value="configuredOrActual">
+                              Configured Break If Less, Else Actual Break
+                              Duration
+                            </option>
+                            <option value="custom">
+                              Custom Break Deduction
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- End Deduct Break -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- End Advanced Details -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- grace -->
+
+    <div class="accordion" id="outerAccordion">
+      <div class="accordion-item border">
+        <h2
+          class="accordion-header"
+          id="graceDetailsHeading"
+          style="padding: 10px"
+        >
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#graceDetailsCollapse"
+            aria-expanded="false"
+            aria-controls="graceDetailsCollapse"
+          >
+            Grace Time Details
+          </button>
+        </h2>
+        <div
+          id="graceDetailsCollapse"
+          class="accordion-collapse collapse"
+          aria-labelledby="graceDetailsHeading"
+        >
+          <div class="accordion-body">
+            <div
+              class="form-row"
+              style="
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                padding: 20px;
+              "
+            >
+              <label style="width: 35%"
+                >Include Grace Time In Working Hours</label
+              >
+              <div class="input-wrapper">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="workShiftDetails.IncludeGraceTime"
+                  [disabled]="disableFields"
+                />
+              </div>
+            </div>
+
+            <div class="working-hours-section">
+              <div
+                class="form-row"
+                style="display: flex; align-items: center; gap: 20px"
+              >
+                <label style="width: 35%"
+                  >Grace Time for Shift Late-IN (Min)</label
+                >
+                <div class="input-wrapper">
+                  <input
+                    type="text"
+                    [(ngModel)]="workShiftDetails.ShiftLateIn"
+                    [disabled]="disableFields"
+                    min="0"
+                  />
+                </div>
+              </div>
+
+              <div
+                class="form-row"
+                style="display: flex; align-items: center; gap: 20px"
+              >
+                <label style="width: 35%"
+                  >Overlap Grace Time With Shift Late-IN</label
+                >
+                <div class="input-wrapper">
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="workShiftDetails.ShiftLateInOverlap"
+                    [disabled]="disableFields"
+                  />
+                </div>
+              </div>
+
+              <div
+                class="form-row"
+                style="display: flex; align-items: center; gap: 20px"
+              >
+                <label style="width: 35%"
+                  >Grace Time for Shift Early-OUT (Min)</label
+                >
+                <div class="input-wrapper">
+                  <input
+                    type="text"
+                    [(ngModel)]="workShiftDetails.ShiftEarlyOut"
+                    [disabled]="disableFields"
+                    min="0"
+                  />
+                </div>
+              </div>
+
+              <div
+                class="form-row"
+                style="display: flex; align-items: center; gap: 20px"
+              >
+                <label style="width: 35%"
+                  >Overlap Grace Time With Shift Early-OUT</label
+                >
+                <div class="input-wrapper">
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="workShiftDetails.ShiftEarlyOutOverlap"
+                    [disabled]="disableFields"
+                  />
+                </div>
+              </div>
+
+              <div
+                class="form-row"
+                style="display: flex; align-items: center; gap: 20px"
+              >
+                <label style="width: 35%"
+                  >Grace Time for Break Late-IN (Min)</label
+                >
+                <div class="input-wrapper">
+                  <input
+                    type="text"
+                    [(ngModel)]="workShiftDetails.BreakLateIn"
+                    [disabled]="disableFields"
+                    min="0"
+                  />
+                </div>
+              </div>
+
+              <div
+                class="form-row"
+                style="display: flex; align-items: center; gap: 20px"
+              >
+                <label style="width: 35%"
+                  >Overlap Grace Time With Break Late-IN</label
+                >
+                <div class="input-wrapper">
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="workShiftDetails.BreakLateInOverlap"
+                    [disabled]="disableFields"
+                  />
+                </div>
+              </div>
+
+              <div
+                class="form-row"
+                style="display: flex; align-items: center; gap: 20px"
+              >
+                <label style="width: 35%"
+                  >Grace Time for Break Early-OUT (Min)</label
+                >
+                <div class="input-wrapper">
+                  <input
+                    type="text"
+                    [(ngModel)]="workShiftDetails.BreakEarlyOut"
+                    [disabled]="disableFields"
+                    min="0"
+                  />
+                </div>
+              </div>
+
+              <div
+                class="form-row"
+                style="display: flex; align-items: center; gap: 20px"
+              >
+                <label style="width: 35%"
+                  >Overlap Grace Time With Break Early-OUT</label
+                >
+                <div class="input-wrapper">
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="workShiftDetails.BreakEarlyOutOverlap"
+                    [disabled]="disableFields"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right" style="width: 35%;background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+    <table class="table table-bordered table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col" style="text-align: center">ID</th>
+          <th scope="col" style="text-align: center">Name</th>
+          <th scope="col" style="text-align: center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let item of filteredList; let i = index"
+          (click)="populateInputFields(item, i)"
+        >
+          <td>{{ item.id }}</td>
+          <td>{{ item.name }}</td>
+          <td>
+            <button
+              style="background-color: rgba(133, 126, 126, 0.338); color: black"
+              (click)="deleteShift(item.id)"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

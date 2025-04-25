@@ -1,0 +1,85 @@
+<!-- Alerts (centered, fixed width, smooth transition) -->
+<div class="d-flex justify-content-center mt-3">
+  <!-- <div
+    *ngIf="successMessage"
+    class="alert alert-success text-center custom-alert"
+    role="alert"
+  >
+    {{ successMessage }}
+  </div> -->
+  <div
+    *ngIf="errorMessage"
+    class="alert alert-danger text-center custom-alert"
+    role="alert"
+  >
+    {{ errorMessage }}
+  </div>
+</div>
+
+<!-- Register form box -->
+<div class="container mt-3 d-flex justify-content-center">
+  <div
+    class="p-4 border rounded shadow-sm"
+    style="width: 100%; max-width: 400px; background-color: #f9f9f9"
+  >
+    <h3 class="text-center mb-4">Create Account</h3>
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group mb-3">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          class="form-control"
+          id="username"
+          #usernameInput
+          name="username"
+          [(ngModel)]="user.username"
+          placeholder="Enter username"
+          required
+        />
+      </div>
+
+      <div class="form-group mb-4">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          name="password"
+          [(ngModel)]="user.password"
+          placeholder="Enter password"
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Register</button>
+      <p>Already have an account <a routerLink="/login">Login</a></p>
+    </form>
+  </div>
+</div>
+
+<!-- Display Data Table if available -->
+<!-- <table
+  *ngIf="formDataList.length > 0; else noData"
+  border="1"
+  cellspacing="0"
+  cellpadding="8"
+>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Username</th>
+      <th>Password Hash</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of formDataList">
+      <td>{{ item.id }}</td>
+      <td>{{ item.username }}</td>
+      <td>{{ item.password }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<ng-template #noData>
+  <p>No data available.</p>
+</ng-template> -->
