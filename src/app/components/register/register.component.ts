@@ -59,7 +59,7 @@ export class RegisterComponent implements OnInit, AfterViewInit {
       },
       error: () => {
         this.successMessage = '';
-        this.errorMessage = 'Registration Failed. Please try again.';
+        this.errorMessage = 'Username already exists.';
         this.clearMessages();
       },
     });

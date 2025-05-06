@@ -37,6 +37,9 @@ export class LoginComponent implements OnInit {
     this.authService.login(this.user).subscribe({
       next: (res: any) => {
         localStorage.setItem('token', res.token);
+        // this.sharedService.setUsername(this.username);  
+        localStorage.setItem('username', this.user.username);
+
         this.successMessage = ' Login Successful!';
         this.errorMessage = '';
         this.clearMessages();

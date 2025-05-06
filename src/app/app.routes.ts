@@ -6,6 +6,8 @@ import { AuthGuard } from './components/auth.guard';
 import { MenuComponent } from './components/menu/menu.component';
 import { ShiftComponent } from './components/shift/shift.component';
 import { UserManagementComponent } from './components/user-management/user-management.component';
+// import { UserManagementComponent } from './components/user-management/user-management.component';
+
 // import { MenuComponent } from './components/menu/menu.component';
 
 export const routes: Routes = [
@@ -14,9 +16,7 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'menu', component: MenuComponent },
-  { path: 'shift', component: ShiftComponent },
-  {
-    path:'user-management',component:UserManagementComponent
-  },
+  { path: 'shift', component: ShiftComponent, canActivate: [AuthGuard] },
+  { path: 'user-management', component: UserManagementComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '/login' }
 ];

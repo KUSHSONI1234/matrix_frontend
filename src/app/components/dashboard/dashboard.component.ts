@@ -33,6 +33,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   currentPage = 1;
   itemsPerPage = 5;
   totalPages = 0;
+  rights: any = {};
+  username: string = ''; // load from token or session
 
   @ViewChild('idInputRef') idInputElement!: ElementRef;
   @ViewChild('nameInputRef') nameInputElement!: ElementRef;
@@ -49,10 +51,32 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
+    this.username = localStorage.getItem('username') || '';
+      this.authService.getPageRights(this.username).subscribe((data) => {
+      const deptRights = data.find((r: any) => r.name.toLowerCase() === 'department');
+      this.rights = deptRights || {};
+      this.authService.setRights('department', this.rights);
+    });
     if (this.validateToken()) {
       this.getUsers();
       setTimeout(() => this.idInputElement?.nativeElement.focus(), 500);
     }
+  }
+
+  canView() {
+    return this.rights.view;
+  }
+
+  canAdd() {
+    return this.rights.add;
+  }
+
+  canEdit() {
+    return this.rights.edit;
+  }
+
+  canDelete() {
+    return this.rights.delete;
   }
 
   ngAfterViewInit(): void {
@@ -172,6 +196,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   selectRow(user: any): void {
+    if (!this.canEdit()) return;
     this.isNewMode = true;
     this.isEditMode = true;
 

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-shift',
@@ -14,7 +15,7 @@ import { RouterLink } from '@angular/router';
 export class ShiftComponent implements AfterViewInit {
   @ViewChild('shiftId') shiftIdInput!: ElementRef;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,private authService: AuthService) {}
 
   disableFields = true;
   deduct2Punch = false;
@@ -29,6 +30,9 @@ export class ShiftComponent implements AfterViewInit {
   alertMessage: string = '';
   alertType: string = ''; // 'success' or 'danger'
   showAlert: boolean = false;
+
+  rights: any = {};
+  username: string = ''; // load from token or session
 
   shift: any = {
     Id: '',
@@ -88,8 +92,31 @@ export class ShiftComponent implements AfterViewInit {
   };
 
   ngOnInit(): void {
+    this.username = localStorage.getItem('username') || '';
+
+    this.authService.getPageRights(this.username).subscribe((data) => {
+      const deptRights = data.find((r: any) => r.name.toLowerCase() === 'department');
+      this.rights = deptRights || {};
+      this.authService.setRights('department', this.rights);
+    });
     this.loadShiftData();
     this.setFocus();
+  }
+
+  canView() {
+    return this.rights.view;
+  }
+
+  canAdd() {
+    return this.rights.add;
+  }
+
+  canEdit() {
+    return this.rights.edit;
+  }
+
+  canDelete() {
+    return this.rights.delete;
   }
 
   loadShiftData(): void {
@@ -113,6 +140,8 @@ export class ShiftComponent implements AfterViewInit {
   }
 
   populateInputFields(item: any, index?: number): void {
+    if (!this.canEdit()) return;
+
     this.shift = {
       Id: item.id || '',
       Name: item.name || '',
@@ -318,7 +347,7 @@ export class ShiftComponent implements AfterViewInit {
   }
 
   onShiftIdKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'Tab') {
+    if (event.key === 'Tab' || event.key==='Enter') {
       const matchedItem = this.filteredList.find(
         (item: any) => item.id == this.shift.Id
       );
@@ -333,6 +362,8 @@ export class ShiftComponent implements AfterViewInit {
       }
     }
   }
+
+  
 
   Save() {
     const finalShiftData = {
