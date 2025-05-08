@@ -2,6 +2,7 @@
 <div *ngIf="canView()">
   <div class="navbar-1">
     <div>Department</div>
+    <button routerLink="/login">Logout</button>
   </div>
 
   <div class="success-message-container" *ngIf="successMessage">
@@ -13,7 +14,7 @@
   <!-- Navbar 2 -->
   <div class="navbar-2">
     <div class="left">
-      <button (click)="newBtn()" *ngIf="canAdd()">New</button>
+      <button (click)="newBtn()" [disabled]="!canAdd()">New</button>
       <!-- ✅ Bootstrap Alert -->
 
       <!-- ✅ Submit Button with Bootstrap Styling -->
@@ -31,11 +32,12 @@
     <div class="right">
       <input
         style="font-size: 17px"
-        type="text"
+        type="text"  class="form-control"
         placeholder="Search..."
         [(ngModel)]="searchTerm"
         (input)="filterUsers()"
       />
+      <!-- <button>Logout</button> -->
     </div>
   </div>
 
@@ -174,7 +176,7 @@
             <td class="text-center">
               <button
                 (click)="deleteUser(user.id); $event.stopPropagation()"
-                class="deleteBtn" *ngIf="canDelete()"
+                class="deleteBtn" [disabled]="!canDelete()"
               >
                 Delete
               </button>

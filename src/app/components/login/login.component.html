@@ -1,22 +1,26 @@
-<!-- Alerts (centered, fixed width, smooth transition) -->
+<!-- Alert -->
 <div class="d-flex justify-content-center mt-3">
-  <div
-    *ngIf="errorMessage"
-    class="alert alert-danger text-center custom-alert"
-    role="alert"
-  >
+  <div *ngIf="errorMessage" class="alert alert-danger text-center custom-alert" role="alert">
     {{ errorMessage }}
   </div>
 </div>
 
-<!-- Login form box -->
+<!-- Login Form -->
 <div class="container mt-3 d-flex justify-content-center">
   <div
     class="p-4 border rounded shadow-sm"
     style="width: 100%; max-width: 400px; background-color: #f9f9f9"
   >
     <h3 class="text-center mb-4">Login</h3>
-    <form (ngSubmit)="onSubmit()">
+
+    <!-- Spinner -->
+    <div *ngIf="loading" class="text-center mb-3">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" *ngIf="!loading">
       <div class="form-group mb-3">
         <label for="username">Username</label>
         <input
@@ -37,7 +41,7 @@
           type="password"
           class="form-control"
           id="password"
-          name="password"   
+          name="password"
           [(ngModel)]="user.password"
           placeholder="Enter password"
           required
@@ -45,7 +49,7 @@
       </div>
 
       <button type="submit" class="btn btn-primary w-100">Login</button>
-      <p>Dont have an Account <a routerLink="/register">Register</a></p>
+      <p class="mt-2">Don’t have an account? <a routerLink="/register">Register</a></p>
     </form>
   </div>
 </div>

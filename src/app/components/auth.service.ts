@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import * as CryptoJS from 'crypto-js';
 import { Observable } from 'rxjs';
@@ -8,8 +8,7 @@ export class AuthService {
   private apiUrl = 'http://192.168.28.44:5000/api/Auth'; // API URL for authentication
   private aesKey = '1234567890123456'; // AES key for encryption
   private tokenKey = 'token'; // Key for storing the token in localStorage
-   private rights: any = {};
-
+  private rights: any = {};
 
   constructor(private http: HttpClient) {}
 
@@ -17,75 +16,77 @@ export class AuthService {
   private encryptAES(text: string): string {
     const encrypted = CryptoJS.AES.encrypt(
       text,
-      CryptoJS.enc.Utf8.parse(this.aesKey), // Key in Utf8
+      CryptoJS.enc.Utf8.parse(this.aesKey),
       {
         mode: CryptoJS.mode.CBC,
-        iv: CryptoJS.enc.Utf8.parse('0000000000000000'), // Initialization Vector (IV)
-        padding: CryptoJS.pad.Pkcs7, // Padding scheme
+        iv: CryptoJS.enc.Utf8.parse('0000000000000000'),
+        padding: CryptoJS.pad.Pkcs7,
       }
     );
-    return encrypted.toString(); // Return encrypted text as string
+    return encrypted.toString();
   }
 
-  // Get accessible pages based on the username (Updated API URL)
+  // Get accessible pages based on the username
   getAccessiblePages(username: string): Observable<string[]> {
     const apiUrl = 'http://192.168.28.44:5038/api/pageRights/access-pages';
     return this.http.get<string[]>(`${apiUrl}?username=${username}`);
   }
 
-  // Fetch form data (Updated to handle API requests)
+  // Fetch form data
   getFormData(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl, {
-      withCredentials: false, // No credentials sent with the request
+      withCredentials: false,
     });
   }
 
-  // Register a new user with encrypted password
+  // Register user with encrypted password
   register(user: any): Observable<string> {
-    const encryptedPassword = this.encryptAES(user.password); // Encrypt password
+    const encryptedPassword = this.encryptAES(user.password);
     return this.http.post<string>(
       `${this.apiUrl}/register`,
       {
         username: user.username,
-        password: encryptedPassword, // Send encrypted password
+        password: encryptedPassword,
       },
       {
-        responseType: 'text' as 'json', // Response type as text (JSON)
-        withCredentials: false, // No credentials for the request
+        responseType: 'text' as 'json',
+        withCredentials: false,
       }
     );
   }
 
   // Login user with encrypted password
   login(user: any): Observable<any> {
-    const encryptedPassword = this.encryptAES(user.password); // Encrypt password
+    const encryptedPassword = this.encryptAES(user.password);
     return this.http.post<any>(
       `${this.apiUrl}/login`,
       {
         username: user.username,
-        password: encryptedPassword, // Send encrypted password
+        password: encryptedPassword,
       },
       {
-        withCredentials: false, // No credentials sent with the request
+        withCredentials: false,
       }
     );
   }
 
-  // Get stored token from localStorage
+  // Get token from localStorage
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
   }
 
-  // Remove token from localStorage (Logout)
+  // Remove token from localStorage
   logout(): void {
-    localStorage.removeItem(this.tokenKey); // Remove token
+    localStorage.removeItem(this.tokenKey);
   }
 
+  // Get user rights for pages
   getPageRights(username: string): Observable<any[]> {
     const apiUrl = 'http://192.168.28.44:5038/api/pageRights/' + username;
     return this.http.get<any[]>(apiUrl);
   }
 
+  // Store rights locally for session use
   setRights(page: string, permissions: any) {
     this.rights[page] = permissions;
   }
@@ -93,5 +94,4 @@ export class AuthService {
   getRights(page: string): any {
     return this.rights[page] || {};
   }
-  
 }

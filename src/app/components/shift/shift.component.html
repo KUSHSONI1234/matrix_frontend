@@ -1,7 +1,7 @@
 <!-- Navbar 1 -->
-
 <div class="navbar-1">
   <div>Shift Configuration</div>
+  <button routerLink="/login">Logout</button>
 </div>
 
 <div
@@ -24,11 +24,20 @@
 
 <div class="navbar-2">
   <div class="left">
-    <button (click)="onNew()"  *ngIf="canAdd()">New</button>
+    <!-- Show the button only if user has 'add' permission -->
+    <button [disabled]="!canAdd()" (click)="onNew()">
+      New
+    </button>
     <!-- ✅ Bootstrap Success Alert -->
 
     <!-- ✅ Bootstrap Save Button -->
-    <button type="button" (click)="Save()">Save</button>
+    <button
+      type="button"
+      (click)="Save()"
+      [disabled]="selectedIndex === null ? !canAdd() : !canEdit()"
+    >
+      {{ selectedIndex === null ? "Save" : "Update" }}
+    </button>
 
     <button routerLink="/menu">Cancel</button>
     <button (click)="refreshBtn()">Refresh</button>
@@ -680,8 +689,8 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     "
   >
-    <table class="table table-bordered table-hover">
-      <thead class="thead-dark">
+    <table class="custom-table mt-3">
+      <thead class>
         <tr>
           <th scope="col" style="text-align: center">ID</th>
           <th scope="col" style="text-align: center">Name</th>
@@ -691,14 +700,15 @@
       <tbody>
         <tr
           *ngFor="let item of filteredList; let i = index"
-          (click)="populateInputFields(item, i)"  
+          (click)="populateInputFields(item, i)"
         >
           <td>{{ item.id }}</td>
           <td>{{ item.name }}</td>
           <td>
-            <button
-              style="background-color: rgba(133, 126, 126, 0.338); color: black"
-              (click)="deleteShift(item.id)" *ngIf="canDelete()"
+            <button 
+              style="background-color: rgba(133, 126, 126, 0.338); color: black;padding: 5px 15px;"
+              (click)="deleteShift(item.id)"
+              [disabled]="!canDelete()"
             >
               Delete
             </button>

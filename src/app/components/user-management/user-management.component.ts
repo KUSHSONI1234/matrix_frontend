@@ -42,12 +42,16 @@ export class UserManagementComponent implements OnInit {
     this.getUsers();
   }
 
-  // Fetch users from the backend
   getUsers() {
     const url = 'http://192.168.28.44:5000/api/Auth';
     this.http.get<{ username: string }[]>(url).subscribe(
       (response) => {
         this.users = response;
+
+        // ✅ Auto-select the first user
+        if (this.users.length > 0) {
+          this.onUserSelect(this.users[0]);
+        }
       },
       (error) => {
         console.error('Error fetching users:', error);
@@ -60,30 +64,32 @@ export class UserManagementComponent implements OnInit {
     this.selectedUser = user;
     this.selectedUsername = user.username; // ✅ This ensures disabling works
 
-    this.http.get<any[]>(`http://192.168.28.44:5038/api/pageRights/${user.username}`).subscribe({
-      next: (rights) => {
-        this.pages.forEach((page) => {
-          page.edit = false;
-          page.view = false;
-          page.delete = false;
-          page.add = false;
-        });
+    this.http
+      .get<any[]>(`http://192.168.28.44:5038/api/pageRights/${user.username}`)
+      .subscribe({
+        next: (rights) => {
+          this.pages.forEach((page) => {
+            page.edit = false;
+            page.view = false;
+            page.delete = false;
+            page.add = false;
+          });
 
-        rights.forEach((right) => {
-          const page = this.pages.find(p => p.name === right.name);
-          if (page) {
-            page.edit = right.edit;
-            page.view = right.view;
-            page.delete = right.delete;
-            page.add = right.add;
-          }
-        });
-      },
-      error: (err) => {
-        console.error('Error loading user rights:', err);
-        alert('Failed to load user rights.');
-      }
-    });
+          rights.forEach((right) => {
+            const page = this.pages.find((p) => p.name === right.name);
+            if (page) {
+              page.edit = right.edit;
+              page.view = right.view;
+              page.delete = right.delete;
+              page.add = right.add;
+            }
+          });
+        },
+        error: (err) => {
+          console.error('Error loading user rights:', err);
+          alert('Failed to load user rights.');
+        },
+      });
   }
 
   // Save page rights to backend
@@ -102,16 +108,18 @@ export class UserManagementComponent implements OnInit {
       add: page.add || false,
     }));
 
-    this.http.post('http://192.168.28.44:5038/api/PageRights', rightsPayload).subscribe({
-      next: () => {
-        alert('Rights saved successfully!');
-        this.resetBtn();
-      },
-      error: (err) => {
-        console.error('Error saving rights:', err);
-        alert('Failed to save rights. Check console for error details.');
-      },
-    });
+    this.http
+      .post('http://192.168.28.44:5038/api/PageRights', rightsPayload)
+      .subscribe({
+        next: () => {
+          alert('Rights saved successfully!');
+          this.resetBtn();
+        },
+        error: (err) => {
+          console.error('Error saving rights:', err);
+          alert('Failed to save rights. Check console for error details.');
+        },
+      });
   }
 
   resetBtn(): void {

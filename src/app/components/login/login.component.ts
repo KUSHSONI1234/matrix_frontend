@@ -17,42 +17,36 @@ export class LoginComponent implements OnInit {
   user = { username: '', password: '' };
   successMessage = '';
   errorMessage = '';
-  
+  loading = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    // Focus the username input field on page load
-    setTimeout(() => this.usernameInputRef?.nativeElement.focus(), 500);
+    setTimeout(() => this.usernameInputRef?.nativeElement.focus(), 300);
   }
 
   onSubmit() {
     if (!this.user.username.trim() || !this.user.password.trim()) {
-      this.successMessage = '';
-      this.errorMessage = ' Please enter both username and password.';
+      this.errorMessage = 'Please enter both username and password.';
       this.clearMessages();
       return;
     }
 
+    this.loading = true;
+
     this.authService.login(this.user).subscribe({
       next: (res: any) => {
         localStorage.setItem('token', res.token);
-        // this.sharedService.setUsername(this.username);  
         localStorage.setItem('username', this.user.username);
 
-        this.successMessage = ' Login Successful!';
-        this.errorMessage = '';
-        this.clearMessages();
-        setTimeout(() => {
-          this.router.navigate(['/menu']);
-        }, 1500);
+        this.router.navigate(['/menu']); // Navigate immediately
       },
       error: (err) => {
-        this.successMessage = '';
+        this.loading = false;
         if (err.status === 500) {
-          this.errorMessage = ' Server error. Please try again later.';
+          this.errorMessage = 'Server error. Please try again later.';
         } else {
-          this.errorMessage = ' Login Failed: Invalid credentials.';
+          this.errorMessage = 'Login Failed: Invalid credentials.';
         }
         this.clearMessages();
       }
@@ -61,8 +55,9 @@ export class LoginComponent implements OnInit {
 
   clearMessages() {
     setTimeout(() => {
-      this.successMessage = '';
       this.errorMessage = '';
-    }, 5000);
+      this.successMessage = '';
+    }, 4000);
   }
 }
+

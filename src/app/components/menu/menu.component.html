@@ -1,18 +1,18 @@
-<!-- <h1 class="menu-title">Menu Page</h1>
+<div class="navbar-1">
+  <div>Welcome {{ username }}!</div>
+  <button routerLink="/login">Logout</button>
+</div>
 
-<a routerLink="/dashboard">Department</a> <br>
-<a routerLink="/shift">Shift Configuration</a> <br>
-<a routerLink="/user-management">User Management</a> -->
-
-<ul>
-  <li *ngIf="canShow('Department')">
-    <a routerLink="/dashboard">Department</a>
-  </li>
-  <li *ngIf="canShow('Shift Configuration')">
-    <a routerLink="/shift">Shift</a>
-  </li>
-  <li *ngIf="canShow('User Management')">
-    <a routerLink="/user-management">User Management</a>
-  </li>
-  <!-- <li><a routerLink="/user-management">Hey</a></li> -->
-</ul>
+<div class="menu-container">
+  <ul>
+    <li *ngIf="canShow('Department')">
+      <a routerLink="/dashboard">Department</a>
+    </li>
+    <li *ngIf="canShow('Shift Configuration')">
+      <a routerLink="/shift">Shift</a>
+    </li>
+    <li *ngIf="canShow('User Management')">
+      <a routerLink="/user-management">User Management</a>
+    </li>
+  </ul>
+</div>

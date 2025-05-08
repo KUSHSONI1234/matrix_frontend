@@ -15,7 +15,7 @@ import { AuthService } from '../auth.service';
 export class ShiftComponent implements AfterViewInit {
   @ViewChild('shiftId') shiftIdInput!: ElementRef;
 
-  constructor(private http: HttpClient,private authService: AuthService) {}
+  constructor(private http: HttpClient,private authService:AuthService) {}
 
   disableFields = true;
   deduct2Punch = false;
@@ -32,7 +32,8 @@ export class ShiftComponent implements AfterViewInit {
   showAlert: boolean = false;
 
   rights: any = {};
-  username: string = ''; // load from token or session
+  username: string = '';
+  
 
   shift: any = {
     Id: '',
@@ -91,18 +92,26 @@ export class ShiftComponent implements AfterViewInit {
     minHoursRequired: false,
   };
 
+  // ngOnInit(): void {
+  //   this.loadShiftData();
+  //   this.setFocus();
+  // }
   ngOnInit(): void {
     this.username = localStorage.getItem('username') || '';
-
     this.authService.getPageRights(this.username).subscribe((data) => {
-      const deptRights = data.find((r: any) => r.name.toLowerCase() === 'department');
-      this.rights = deptRights || {};
-      this.authService.setRights('department', this.rights);
+      const shiftRights = data.find((r: any) => r.name.toLowerCase() === 'shift configuration');
+      this.rights = shiftRights || {};
+      this.authService.setRights('shift', this.rights); // Optional: store for other usage
     });
-    this.loadShiftData();
-    this.setFocus();
-  }
 
+    if (this.validateToken()) {
+      // this.getShifts();
+      this.loadShiftData();
+      this.setFocus();
+      setTimeout(() => this.shiftIdInput?.nativeElement.focus(), 500);
+    }
+  }
+  
   canView() {
     return this.rights.view;
   }
@@ -117,6 +126,11 @@ export class ShiftComponent implements AfterViewInit {
 
   canDelete() {
     return this.rights.delete;
+  }
+
+  validateToken(): boolean {
+    // Your token logic here
+    return true;
   }
 
   loadShiftData(): void {
@@ -141,7 +155,6 @@ export class ShiftComponent implements AfterViewInit {
 
   populateInputFields(item: any, index?: number): void {
     if (!this.canEdit()) return;
-
     this.shift = {
       Id: item.id || '',
       Name: item.name || '',
@@ -347,7 +360,7 @@ export class ShiftComponent implements AfterViewInit {
   }
 
   onShiftIdKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'Tab' || event.key==='Enter') {
+    if (event.key === 'Tab' || event.key === 'Enter') {
       const matchedItem = this.filteredList.find(
         (item: any) => item.id == this.shift.Id
       );
@@ -362,8 +375,6 @@ export class ShiftComponent implements AfterViewInit {
       }
     }
   }
-
-  
 
   Save() {
     const finalShiftData = {

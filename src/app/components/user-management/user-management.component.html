@@ -1,11 +1,107 @@
-<button routerLink="/login" style="width: 15%;">Login Button</button>
+<!-- Navbar -->
+<div class="navbar-1">
+  <div>User-Management Rights</div>
+  <button routerLink="/menu" style="margin-right: 20px">Cancel</button>
+  <button routerLink="/login">Logout</button>
+</div>
 
+<div class="navbar-2">
+  <div class="left">
+    <button>New</button>
+    <!-- ✅ Bootstrap Alert -->
+
+    <!-- ✅ Submit Button with Bootstrap Styling -->
+    <button type="submit">Save</button>
+
+    <button routerLink="/menu">Cancel</button>
+    <button>Refresh</button>
+  </div>
+
+  <div class="right">
+    <input
+      style="font-size: 17px"
+      type="text"
+      class="form-control"
+      placeholder="Search..."
+    />
+    <!-- <button>Logout</button> -->
+  </div>
+</div>
+
+<!-- Flex container holding both left and right sections -->
 <div class="flex-container">
-  <!-- Left: User List -->
-  <div class="container" style="width: 40%">
+  <div class="container right-container">
+    <ng-container *ngIf="selectedUser">
+      <h2>
+        Page Rights for
+        <span style="color: #007acc">{{ selectedUser.username }}</span>
+      </h2>
+
+      <table class="styled-table c-width">
+        <thead>
+          <tr>
+            <th>Page Name</th>
+            <th>Edit</th>
+            <th>View</th>
+            <th>Delete</th>
+            <th>Add</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let page of pages">
+            <td>{{ page.name }}</td>
+            <td>
+              <input
+                type="checkbox"
+                [(ngModel)]="page.edit"
+                [disabled]="selectedUsername === 'sa'"
+              />
+            </td>
+            <td>
+              <input
+                type="checkbox"
+                [(ngModel)]="page.view"
+                [disabled]="selectedUsername === 'sa'"
+              />
+            </td>
+            <td>
+              <input
+                type="checkbox"
+                [(ngModel)]="page.delete"
+                [disabled]="selectedUsername === 'sa'"
+              />
+            </td>
+            <td>
+              <input
+                type="checkbox"
+                [(ngModel)]="page.add"
+                [disabled]="selectedUsername === 'sa'"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="save-btn-container" style="margin-top: 15px">
+        <button
+          class="action-btn save"
+          (click)="saveRights()"
+          [disabled]="selectedUsername === 'sa'"
+        >
+          Save Rights
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- <ng-template #placeholder>
+      <p>Please select a user to view page rights.</p>
+    </ng-template> -->
+  </div>
+
+  <div class="container left-container">
     <h2>User Management</h2>
 
-    <table class="styled-table" *ngIf="users.length > 0; else noDataTemplate">
+    <table class="styled-table" *ngIf="users.length > 0">
       <thead>
         <tr>
           <th style="text-align: center">Username</th>
@@ -25,71 +121,8 @@
       </tbody>
     </table>
 
-    <ng-template #noDataTemplate>
+    <!-- <ng-template #noDataTemplate>
       <div class="no-data">No user data available.</div>
-    </ng-template>
-  </div>
-
-  <!-- Right: Page Rights -->
-  <div class="container" style="width: 50%" *ngIf="selectedUser">
-    <h2>
-      Page Rights for
-      <span style="color: #007acc">{{ selectedUser.username }}</span>
-    </h2>
-
-    <table class="styled-table c-width">
-      <thead>
-        <tr>
-          <th>Page Name</th>
-          <th>Edit</th>
-          <th>View</th>
-          <th>Delete</th>
-          <th>Add</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let page of pages">
-          <td>{{ page.name }}</td>
-          <td>
-            <input
-              type="checkbox"
-              [(ngModel)]="page.edit"
-              [disabled]="selectedUsername === 'sa'"
-            />
-          </td>
-          <td>
-            <input
-              type="checkbox"
-              [(ngModel)]="page.view"
-              [disabled]="selectedUsername === 'sa'"
-            />
-          </td>
-          <td>
-            <input
-              type="checkbox"
-              [(ngModel)]="page.delete"
-              [disabled]="selectedUsername === 'sa'"
-            />
-          </td>
-          <td>
-            <input
-              type="checkbox"
-              [(ngModel)]="page.add"
-              [disabled]="selectedUsername === 'sa'"
-            />
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="save-btn-container" style="margin-top: 15px">
-      <button
-        class="action-btn save"
-        (click)="saveRights()"
-        [disabled]="selectedUsername === 'sa'"
-      >
-        Save Rights
-      </button>
-    </div>
+    </ng-template> -->
   </div>
 </div>
