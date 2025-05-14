@@ -25,8 +25,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   paginatedUsers: any[] = [];
   suggestions: any[] = [];
 
-  successMessage: string = '';
-  errorMessage: string = '';
+  successMessage = '';
+  errorMessage = '';
 
   searchTerm = '';
   idInput = '';
@@ -34,7 +34,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   itemsPerPage = 5;
   totalPages = 0;
   rights: any = {};
-  username: string = ''; // load from token or session
+  username = '';
 
   @ViewChild('idInputRef') idInputElement!: ElementRef;
   @ViewChild('nameInputRef') nameInputElement!: ElementRef;
@@ -52,31 +52,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.username = localStorage.getItem('username') || '';
-      this.authService.getPageRights(this.username).subscribe((data) => {
-      const deptRights = data.find((r: any) => r.name.toLowerCase() === 'department');
+    this.authService.getPageRights(this.username).subscribe((data) => {
+      const deptRights = data.find(
+        (r: any) => r.name.toLowerCase() === 'department'
+      );
       this.rights = deptRights || {};
       this.authService.setRights('department', this.rights);
     });
+
     if (this.validateToken()) {
       this.getUsers();
       setTimeout(() => this.idInputElement?.nativeElement.focus(), 500);
     }
-  }
-
-  canView() {
-    return this.rights.view;
-  }
-
-  canAdd() {
-    return this.rights.add;
-  }
-
-  canEdit() {
-    return this.rights.edit;
-  }
-
-  canDelete() {
-    return this.rights.delete;
   }
 
   ngAfterViewInit(): void {
@@ -115,6 +102,22 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/login']);
   }
 
+  canView() {
+    return this.rights.view;
+  }
+
+  canAdd() {
+    return this.rights.add;
+  }
+
+  canEdit() {
+    return this.rights.edit;
+  }
+
+  canDelete() {
+    return this.rights.delete;
+  }
+
   getUsers(): void {
     if (!this.validateToken()) return;
 
@@ -131,27 +134,24 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     });
   }
 
-  showSuccessMessage(message: string): void {
-    this.successMessage = message;
-    setTimeout(() => {
-      this.successMessage = '';
-    }, 3000); // Hide after 3 seconds
-  }
-
-  showErrorMessage(message: string): void {
-    this.errorMessage = message;
-    setTimeout(() => {
-      this.errorMessage = '';
-    }, 4000); // Hide after 4 seconds
-  }
-
   onSubmit(): void {
     if (!this.validateToken()) return;
+
+    const isCreate = this.formData.id === 0;
+
+    if (isCreate && !this.canAdd()) {
+      this.showErrorMessage('You do not have permission to create new entries.');
+      return;
+    }
+
+    if (!isCreate && !this.canEdit()) {
+      this.showErrorMessage('You do not have permission to edit this entry.');
+      return;
+    }
 
     const token = this.authService.getToken();
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 
-    const isCreate = this.formData.id === 0;
     const url = isCreate ? this.apiUrl : `${this.apiUrl}/${this.formData.id}`;
     const request = isCreate
       ? this.http.post(url, this.formData, { headers, responseType: 'text' })
@@ -164,19 +164,23 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.showSuccessMessage(
           isCreate ? 'Form created successfully!' : 'Form updated successfully!'
         );
+        this.isEditMode = false;
+        this.isNewMode = false;
       },
       error: (err) => {
         this.handleApiError(err);
         this.showErrorMessage('Failed to submit the form. Please try again.');
       },
     });
-
-    this.isEditMode = false;
-    this.isNewMode = false;
   }
 
   deleteUser(id: number): void {
     if (!this.validateToken()) return;
+
+    if (!this.canDelete()) {
+      this.showErrorMessage('You do not have permission to delete.');
+      return;
+    }
 
     const confirmed = confirm('Are you sure you want to delete this user?');
     if (!confirmed) return;
@@ -184,26 +188,23 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     const token = this.authService.getToken();
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 
-    this.http
-      .delete(`${this.apiUrl}/${id}`, { headers, responseType: 'text' })
-      .subscribe({
-        next: () => {
-          this.showMessage('User deleted successfully!');
-          this.getUsers();
-        },
-        error: (err) => this.handleApiError(err),
-      });
+    this.http.delete(`${this.apiUrl}/${id}`, { headers, responseType: 'text' }).subscribe({
+      next: () => {
+        this.showMessage('User deleted successfully!');
+        this.getUsers();
+      },
+      error: (err) => this.handleApiError(err),
+    });
   }
 
   selectRow(user: any): void {
     if (!this.canEdit()) return;
+
     this.isNewMode = true;
     this.isEditMode = true;
-
     this.formData = { ...user };
     this.idInput = user.id.toString();
 
-    // focus on name field if needed
     setTimeout(() => {
       this.nameInputElement?.nativeElement.focus();
     }, 100);
@@ -240,14 +241,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   onKeyDown(event: KeyboardEvent): void {
-    // this.isEditMode=false;
-    if (
-      (event.key === 'Enter' || event.key === 'Tab') &&
-      this.suggestions.length > 0
-    ) {
+    if ((event.key === 'Enter' || event.key === 'Tab') && this.suggestions.length > 0) {
+      event.preventDefault();
       this.isEditMode = true;
       this.isNewMode = true;
-      event.preventDefault();
       this.selectSuggestion(this.suggestions[0]);
     }
   }
@@ -255,18 +252,20 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   filterUsers(): void {
     const term = this.searchTerm.toLowerCase().trim();
     this.filteredUsers = term
-      ? this.users.filter((user) => user.name.toLowerCase().includes(term))
+      ? this.users.filter(
+          (user) =>
+            user.name.toLowerCase().includes(term) ||
+            user.id.toString().includes(term)
+        )
       : [...this.users];
+
     this.currentPage = 1;
     this.updatePaginatedUsers();
   }
 
   updatePaginatedUsers(): void {
     const start = (this.currentPage - 1) * this.itemsPerPage;
-    this.paginatedUsers = this.filteredUsers.slice(
-      start,
-      start + this.itemsPerPage
-    );
+    this.paginatedUsers = this.filteredUsers.slice(start, start + this.itemsPerPage);
     this.totalPages = Math.ceil(this.filteredUsers.length / this.itemsPerPage);
   }
 
@@ -285,32 +284,38 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   refreshBtn(): void {
-    window.location.reload();
     this.getUsers();
     this.resetForm();
     this.isNewMode = false;
-
-    setTimeout(() => {
-      this.idInputElement?.nativeElement.focus();
-    });
+    setTimeout(() => this.idInputElement?.nativeElement.focus());
   }
 
   newBtn(): void {
     this.isNewMode = true;
     this.isEditMode = false;
     this.resetForm();
-
-    setTimeout(() => {
-      this.nameInputElement?.nativeElement.focus();
-    }, 100);
+    setTimeout(() => this.nameInputElement?.nativeElement.focus(), 100);
   }
 
-  // Reusable alert method
   showMessage(message: string): void {
     this.successMessage = message;
     setTimeout(() => {
       this.successMessage = '';
     }, 3000);
+  }
+
+  showSuccessMessage(message: string): void {
+    this.successMessage = message;
+    setTimeout(() => {
+      this.successMessage = '';
+    }, 3000);
+  }
+
+  showErrorMessage(message: string): void {
+    this.errorMessage = message;
+    setTimeout(() => {
+      this.errorMessage = '';
+    }, 4000);
   }
 
   private handleApiError(error: any): void {

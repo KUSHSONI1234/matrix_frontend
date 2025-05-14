@@ -1,6 +1,10 @@
 <!-- Alert -->
 <div class="d-flex justify-content-center mt-3">
-  <div *ngIf="errorMessage" class="alert alert-danger text-center custom-alert" role="alert">
+  <div
+    *ngIf="errorMessage"
+    class="alert alert-danger text-center custom-alert"
+    role="alert"
+  >
     {{ errorMessage }}
   </div>
 </div>
@@ -14,13 +18,8 @@
     <h3 class="text-center mb-4">Login</h3>
 
     <!-- Spinner -->
-    <div *ngIf="loading" class="text-center mb-3">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
 
-    <form (ngSubmit)="onSubmit()" *ngIf="!loading">
+    <form (ngSubmit)="onSubmit()">
       <div class="form-group mb-3">
         <label for="username">Username</label>
         <input
@@ -49,7 +48,9 @@
       </div>
 
       <button type="submit" class="btn btn-primary w-100">Login</button>
-      <p class="mt-2">Don’t have an account? <a routerLink="/register">Register</a></p>
+      <p class="mt-2">
+        Don’t have an account? <a routerLink="/register">Register</a>
+      </p>
     </form>
   </div>
 </div>

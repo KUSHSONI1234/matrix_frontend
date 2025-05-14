@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   standalone: true,
-  imports: [FormsModule, CommonModule,RouterLink]
+  imports: [FormsModule, CommonModule, RouterLink],
 })
 export class LoginComponent implements OnInit {
   @ViewChild('usernameInput') usernameInputRef!: ElementRef;
@@ -17,7 +17,6 @@ export class LoginComponent implements OnInit {
   user = { username: '', password: '' };
   successMessage = '';
   errorMessage = '';
-  loading = false;
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -32,8 +31,6 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
-
     this.authService.login(this.user).subscribe({
       next: (res: any) => {
         localStorage.setItem('token', res.token);
@@ -42,14 +39,13 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/menu']); // Navigate immediately
       },
       error: (err) => {
-        this.loading = false;
         if (err.status === 500) {
           this.errorMessage = 'Server error. Please try again later.';
         } else {
           this.errorMessage = 'Login Failed: Invalid credentials.';
         }
         this.clearMessages();
-      }
+      },
     });
   }
 
@@ -60,4 +56,3 @@ export class LoginComponent implements OnInit {
     }, 4000);
   }
 }
-

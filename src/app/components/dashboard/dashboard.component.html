@@ -32,7 +32,8 @@
     <div class="right">
       <input
         style="font-size: 17px"
-        type="text"  class="form-control"
+        type="text"
+        class="form-control"
         placeholder="Search..."
         [(ngModel)]="searchTerm"
         (input)="filterUsers()"
@@ -176,7 +177,8 @@
             <td class="text-center">
               <button
                 (click)="deleteUser(user.id); $event.stopPropagation()"
-                class="deleteBtn" [disabled]="!canDelete()"
+                class="deleteBtn"
+                [disabled]="!canDelete()"
               >
                 Delete
               </button>

@@ -1,7 +1,6 @@
-<!-- Alerts (centered, fixed width, smooth transition) -->
 <div class="d-flex justify-content-center mt-3">
   <!-- <div
-    *ngIf="successMessage"
+    *ngIf="successMessages"
     class="alert alert-success text-center custom-alert"
     role="alert"
   >
@@ -56,30 +55,3 @@
     </form>
   </div>
 </div>
-
-<!-- Display Data Table if available -->
-<!-- <table
-  *ngIf="formDataList.length > 0; else noData"
-  border="1"
-  cellspacing="0"
-  cellpadding="8"
->
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Username</th>
-      <th>Password Hash</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let item of formDataList">
-      <td>{{ item.id }}</td>
-      <td>{{ item.username }}</td>
-      <td>{{ item.password }}</td>
-    </tr>
-  </tbody>
-</table>
-
-<ng-template #noData>
-  <p>No data available.</p>
-</ng-template> -->

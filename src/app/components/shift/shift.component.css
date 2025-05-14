@@ -275,6 +275,36 @@ input[type="checkbox"] {
   padding: 0.75rem 1.25rem;
 }
 
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.pagination-controls button {
+  background-color: #6c757d;
+  color: black;
+  width: 200px;
+
+  padding: 8px 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination-controls button:hover {
+  background-color: #5a6268;
+}
+
+.pagination-controls button:disabled {
+  background-color: #e2e6ea;
+  cursor: not-allowed;
+}
+
 /* Ensuring form fields are aligned properly within their columns */
 .input-wrapper input,
 .input-wrapper select {

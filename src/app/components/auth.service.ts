@@ -39,6 +39,13 @@ export class AuthService {
     });
   }
 
+  // Delete user by username
+  deleteUser(username: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${username}`, {
+      responseType: 'text', // ← Allow plain text too
+    });
+  }
+
   // Register user with encrypted password
   register(user: any): Observable<string> {
     const encryptedPassword = this.encryptAES(user.password);

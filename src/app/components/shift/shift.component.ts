@@ -33,6 +33,11 @@ export class ShiftComponent implements AfterViewInit {
 
   rights: any = {};
   username: string = '';
+
+  currentPage = 1;
+  itemsPerPage = 5;
+  totalPages = 0;
+  paginatedUsers: any[] = [];
   
 
   shift: any = {
@@ -111,6 +116,29 @@ export class ShiftComponent implements AfterViewInit {
       setTimeout(() => this.shiftIdInput?.nativeElement.focus(), 500);
     }
   }
+
+  updatePaginatedUsers():void {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    this.paginatedUsers = this.filteredList.slice(
+      start,
+      start + this.itemsPerPage
+    );
+    this.totalPages = Math.ceil(this.filteredList.length / this.itemsPerPage);
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedUsers();
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedUsers();
+    }
+  }
   
   canView() {
     return this.rights.view;
@@ -139,6 +167,8 @@ export class ShiftComponent implements AfterViewInit {
         console.log(' Shift data loaded:', data);
         this.shiftList = data;
         this.filteredList = data; // Initialize filteredList with all data
+        // this.filteredUsers = [...res];
+        this.updatePaginatedUsers();
       },
       error: (err) => {
         console.error(' Error loading shift data:', err);
@@ -146,12 +176,16 @@ export class ShiftComponent implements AfterViewInit {
     });
   }
 
-  filterList(): void {
+  filterList():void{
     const term = this.searchTerm.toLowerCase().trim();
     this.filteredList = this.shiftList.filter((item) =>
-      item.name.toLowerCase().includes(term)
+      item.name.toLowerCase().includes(term) ||
+    item.id.toString().toLowerCase().includes(term)
     );
+    this.currentPage = 1;
+    this.updatePaginatedUsers();
   }
+  // user.id.toString().toLowerCase().includes(term)
 
   populateInputFields(item: any, index?: number): void {
     if (!this.canEdit()) return;

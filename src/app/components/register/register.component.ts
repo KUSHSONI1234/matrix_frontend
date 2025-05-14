@@ -1,4 +1,10 @@
-import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ElementRef,
+  ViewChild,
+  AfterViewInit,
+} from '@angular/core';
 import { AuthService } from '../auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -8,7 +14,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
-  imports: [FormsModule, CommonModule, ReactiveFormsModule,RouterLink],
+  imports: [FormsModule, CommonModule, ReactiveFormsModule, RouterLink],
 })
 export class RegisterComponent implements OnInit, AfterViewInit {
   @ViewChild('usernameInput') usernameInputRef!: ElementRef;

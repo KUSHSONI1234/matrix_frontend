@@ -699,7 +699,7 @@
       </thead>
       <tbody>
         <tr
-          *ngFor="let item of filteredList; let i = index"
+          *ngFor="let item of paginatedUsers; let i = index"
           (click)="populateInputFields(item, i)"
         >
           <td>{{ item.id }}</td>
@@ -716,5 +716,15 @@
         </tr>
       </tbody>
     </table>
+
+    <div class="pagination-controls">
+      <button (click)="previousPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
   </div>
 </div>

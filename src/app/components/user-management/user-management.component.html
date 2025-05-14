@@ -1,36 +1,95 @@
 <!-- Navbar -->
 <div class="navbar-1">
   <div>User-Management Rights</div>
-  <button routerLink="/menu" style="margin-right: 20px">Cancel</button>
+  <!-- <button routerLink="/menu" style="margin-right: 20px">Cancel</button> -->
   <button routerLink="/login">Logout</button>
 </div>
 
 <div class="navbar-2">
   <div class="left">
-    <button>New</button>
+    <button (click)="newBtn()" style="font-weight: 500">New</button>
     <!-- ✅ Bootstrap Alert -->
 
     <!-- ✅ Submit Button with Bootstrap Styling -->
-    <button type="submit">Save</button>
+    <button
+      type="submit"
+      class="btn btn-primary w-100"
+      [disabled]="!canAdd()"
+      (click)="onSubmit()"
+      style="font-weight: 500"
+    >
+      Save
+    </button>
 
-    <button routerLink="/menu">Cancel</button>
-    <button>Refresh</button>
+    <button routerLink="/menu" style="font-weight: 500">Cancel</button>
+    <button (click)="reset()" style="font-weight: 500">Refresh</button>
   </div>
-
   <div class="right">
     <input
-      style="font-size: 17px"
       type="text"
       class="form-control"
       placeholder="Search..."
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="filterUsers()"
     />
+
     <!-- <button>Logout</button> -->
   </div>
 </div>
 
-<!-- Flex container holding both left and right sections -->
+<div class="d-flex justify-content-center">
+  <div
+    *ngIf="errorMessage"
+    class="alert alert-danger text-center custom-alert"
+    role="alert"
+  >
+    {{ errorMessage }}
+  </div>
+</div>
+
 <div class="flex-container">
-  <div class="container right-container">
+  <div class="right-container">
+    <form class="register-box" #myForm="ngForm">
+      <h4 class="text-center">Create User</h4>
+
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        "
+      >
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          [(ngModel)]="user.username"
+          placeholder="Enter username"
+          required
+          #usernameInput
+        />
+      </div>
+
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        "
+      >
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [(ngModel)]="user.password"
+          placeholder="Enter password"
+          required
+        />
+      </div>
+    </form>
+
     <ng-container *ngIf="selectedUser">
       <h2>
         Page Rights for
@@ -54,28 +113,28 @@
               <input
                 type="checkbox"
                 [(ngModel)]="page.edit"
-                [disabled]="selectedUsername === 'sa'"
+                [disabled]="!canEditRights() || selectedUsername == 'sa'"
               />
             </td>
             <td>
               <input
                 type="checkbox"
                 [(ngModel)]="page.view"
-                [disabled]="selectedUsername === 'sa'"
+                [disabled]="!canEditRights() || selectedUsername == 'sa'"
               />
             </td>
             <td>
               <input
                 type="checkbox"
                 [(ngModel)]="page.delete"
-                [disabled]="selectedUsername === 'sa'"
+                [disabled]="!canEditRights() || selectedUsername == 'sa'"
               />
             </td>
             <td>
               <input
                 type="checkbox"
                 [(ngModel)]="page.add"
-                [disabled]="selectedUsername === 'sa'"
+                [disabled]="!canEditRights() || selectedUsername == 'sa'"
               />
             </td>
           </tr>
@@ -86,30 +145,27 @@
         <button
           class="action-btn save"
           (click)="saveRights()"
-          [disabled]="selectedUsername === 'sa'"
+          [disabled]="!canEditRights()"
         >
           Save Rights
         </button>
       </div>
     </ng-container>
-
-    <!-- <ng-template #placeholder>
-      <p>Please select a user to view page rights.</p>
-    </ng-template> -->
   </div>
 
-  <div class="container left-container">
+  <div class="left-container">
     <h2>User Management</h2>
 
-    <table class="styled-table" *ngIf="users.length > 0">
+    <table class="custom-table mt-3" *ngIf="users.length > 0">
       <thead>
         <tr>
-          <th style="text-align: center">Username</th>
+          <th>Username</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
         <tr
-          *ngFor="let user of users"
+          *ngFor="let user of paginatedUsers"
           (click)="onUserSelect(user)"
           [ngClass]="{
             'selected-row': selectedUser?.username === user.username
@@ -117,12 +173,28 @@
           style="cursor: pointer"
         >
           <td style="text-align: center">{{ user.username }}</td>
+          <td style="text-align: center">
+            <button
+              (click)="deleteUser(user.username); $event.stopPropagation()"
+              class="deleteBtn"
+              title="Delete user"
+              [disabled]="!canDelete()"
+            >
+              Delete
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
 
-    <!-- <ng-template #noDataTemplate>
-      <div class="no-data">No user data available.</div>
-    </ng-template> -->
+    <div class="pagination-controls">
+      <button (click)="previousPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
   </div>
 </div>
