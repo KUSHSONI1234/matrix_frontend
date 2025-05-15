@@ -38,6 +38,11 @@ export class ShiftComponent implements AfterViewInit {
   itemsPerPage = 5;
   totalPages = 0;
   paginatedUsers: any[] = [];
+
+    isEditMode: boolean = false; // ✅ Add this line
+    isNewMode: boolean = false; // if used
+    // hasEditPermission:boolean=false;
+    
   
 
   shift: any = {
@@ -235,7 +240,7 @@ export class ShiftComponent implements AfterViewInit {
       minHoursRequired: item.minHoursRequired || false,
     };
 
-    this.selectedIndex = index ?? null; // Set index here
+    this.isEditMode=true; // Set index here
     this.disableFields = false;
     this.setFocus();
   }
@@ -395,20 +400,29 @@ export class ShiftComponent implements AfterViewInit {
 
   onShiftIdKeyDown(event: KeyboardEvent): void {
     if (event.key === 'Tab' || event.key === 'Enter') {
-      const matchedItem = this.filteredList.find(
+      const matchedItemIndex = this.filteredList.findIndex(
         (item: any) => item.id == this.shift.Id
       );
-
-      if (matchedItem) {
+  
+      if (matchedItemIndex !== -1) {
         event.preventDefault(); // prevent focus change
+        const matchedItem = this.filteredList[matchedItemIndex];
+  
         this.populateInputFields(matchedItem);
+  
+        // ✅ Set selectedIndex so Save() knows it's an edit
+        this.selectedIndex = matchedItemIndex;
+  
+        // Optional: set edit mode flag if you use one
+        this.isEditMode = true;
       } else {
-        // Optional: clear fields or show a message
-        // this.clearForm();
-        // alert('No data found with this ID');
+        // No matching record found
+        this.selectedIndex = null;
+        this.isEditMode = false;
       }
     }
   }
+  
 
   Save() {
     const finalShiftData = {
@@ -418,7 +432,8 @@ export class ShiftComponent implements AfterViewInit {
       ...this.workShiftDetails,
     };
 
-    const isEdit = !!this.shift.Id && this.selectedIndex !== null;
+    const isEdit = !!this.shift.Id;
+
     const apiUrl = 'http://192.168.28.44:5234/api/shift';
 
     if (!isEdit) {
@@ -451,3 +466,29 @@ export class ShiftComponent implements AfterViewInit {
     });
   }
 }
+
+
+// onShiftIdKeyDown(event: KeyboardEvent): void {
+//   if (event.key === 'Tab' || event.key === 'Enter') {
+//     const matchedItemIndex = this.filteredList.findIndex(
+//       (item: any) => item.id == this.shift.Id
+//     );
+
+//     if (matchedItemIndex !== -1) {
+//       event.preventDefault(); // prevent focus change
+//       const matchedItem = this.filteredList[matchedItemIndex];
+
+//       this.populateInputFields(matchedItem);
+
+//       // ✅ Set selectedIndex so Save() knows it's an edit
+//       this.selectedIndex = matchedItemIndex;
+
+//       // Optional: set edit mode flag if you use one
+//       // this.isEditMode = true;
+//     } else {
+//       // No matching record found
+//       this.selectedIndex = null;
+//       // this.isEditMode = false;
+//     }
+//   }
+// }

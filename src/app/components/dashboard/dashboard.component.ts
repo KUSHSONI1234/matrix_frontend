@@ -140,7 +140,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     const isCreate = this.formData.id === 0;
 
     if (isCreate && !this.canAdd()) {
-      this.showErrorMessage('You do not have permission to create new entries.');
+      this.showErrorMessage(
+        'You do not have permission to create new entries.'
+      );
       return;
     }
 
@@ -188,13 +190,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     const token = this.authService.getToken();
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 
-    this.http.delete(`${this.apiUrl}/${id}`, { headers, responseType: 'text' }).subscribe({
-      next: () => {
-        this.showMessage('User deleted successfully!');
-        this.getUsers();
-      },
-      error: (err) => this.handleApiError(err),
-    });
+    this.http
+      .delete(`${this.apiUrl}/${id}`, { headers, responseType: 'text' })
+      .subscribe({
+        next: () => {
+          this.showMessage('User deleted successfully!');
+          this.getUsers();
+        },
+        error: (err) => this.handleApiError(err),
+      });
   }
 
   selectRow(user: any): void {
@@ -241,7 +245,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   onKeyDown(event: KeyboardEvent): void {
-    if ((event.key === 'Enter' || event.key === 'Tab') && this.suggestions.length > 0) {
+    if (
+      (event.key === 'Enter' || event.key === 'Tab') &&
+      this.suggestions.length > 0
+    ) {
       event.preventDefault();
       this.isEditMode = true;
       this.isNewMode = true;
@@ -265,7 +272,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   updatePaginatedUsers(): void {
     const start = (this.currentPage - 1) * this.itemsPerPage;
-    this.paginatedUsers = this.filteredUsers.slice(start, start + this.itemsPerPage);
+    this.paginatedUsers = this.filteredUsers.slice(
+      start,
+      start + this.itemsPerPage
+    );
     this.totalPages = Math.ceil(this.filteredUsers.length / this.itemsPerPage);
   }
 

@@ -5,6 +5,12 @@
   <button routerLink="/login">Logout</button>
 </div>
 
+<div class="success-message-container" *ngIf="successMessage">
+  <div class="alert alert-success fade show" role="alert">
+    {{ successMessage }}
+  </div>
+</div>
+
 <div class="navbar-2">
   <div class="left">
     <button (click)="newBtn()" style="font-weight: 500">New</button>

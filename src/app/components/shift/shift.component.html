@@ -34,9 +34,10 @@
     <button
       type="button"
       (click)="Save()"
-      [disabled]="selectedIndex === null ? !canAdd() : !canEdit()"
+      [disabled]="!isNewMode && !isEditMode"
     >
-      {{ selectedIndex === null ? "Save" : "Update" }}
+      <!-- {{ selectedIndex === null ? "Save" : "Update" }} -->
+      Save
     </button>
 
     <button routerLink="/menu">Cancel</button>
@@ -79,7 +80,7 @@
       <!-- Shift ID and Name Row -->
       <div class="form-row">
         <label>Shift <span class="required">*</span></label>
-        <div class="form-field input-pair">
+        <div class="form-field input-pair"> 
           <input
             #shiftId
             type="text"

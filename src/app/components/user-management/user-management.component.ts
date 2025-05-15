@@ -165,15 +165,22 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       this.authService.deleteUser(username).subscribe({
         next: () => {
           this.users = this.users.filter((u) => u.username !== username);
+
           if (this.selectedUsername === username) {
             this.selectedUser = null;
             this.selectedUsername = '';
-            this.getUsers();
           }
+
+          this.successMessage = `User '${username}' deleted successfully.`;
+          this.errorMessage = '';
+          this.clearMessages(); // clears alert after a few seconds
+          this.filterUsers(); // optional: update the filtered list without full refresh
         },
         error: (err) => {
           console.error('Error deleting user:', err);
-          alert('User deletion failed.');
+          this.errorMessage = 'User deletion failed.';
+          this.successMessage = '';
+          this.clearMessages();
         },
       });
     }
@@ -186,18 +193,17 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       this.clearMessages();
       return;
     }
-  
+
     this.authService.register(this.user).subscribe({
       next: () => {
-        this.successMessage = 'Registered Successfully!';
+        this.successMessage = 'User created successfully!';
         this.errorMessage = '';
-  
+
         const newUser = { username: this.user.username };
         this.users.push(newUser);
         this.selectedUser = newUser;
         this.selectedUsername = newUser.username;
-  
-        // ✅ Set default rights for Department and Shift Configuration
+
         const defaultRights = [
           {
             username: newUser.username,
@@ -216,8 +222,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
             add: false,
           },
         ];
-  
-        // 🔁 Post these default rights to the API
+
         this.http
           .post('http://192.168.28.44:5038/api/PageRights', defaultRights)
           .subscribe({
@@ -229,8 +234,8 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
               console.error('Error saving default rights:', err);
             },
           });
-  
-        this.resetRights(); // Clear the UI checkboxes
+
+        this.resetRights();
         this.user = { username: '', password: '' };
         setTimeout(() => this.usernameInputRef?.nativeElement.focus(), 0);
         this.clearMessages();
@@ -242,7 +247,6 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       },
     });
   }
-  
 
   resetRights(): void {
     this.pages.forEach((page) => {
