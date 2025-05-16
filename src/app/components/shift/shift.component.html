@@ -25,9 +25,7 @@
 <div class="navbar-2">
   <div class="left">
     <!-- Show the button only if user has 'add' permission -->
-    <button [disabled]="!canAdd()" (click)="onNew()">
-      New
-    </button>
+    <button [disabled]="!canAdd()" (click)="onNew()">New</button>
     <!-- ✅ Bootstrap Success Alert -->
 
     <!-- ✅ Bootstrap Save Button -->
@@ -80,7 +78,7 @@
       <!-- Shift ID and Name Row -->
       <div class="form-row">
         <label>Shift <span class="required">*</span></label>
-        <div class="form-field input-pair"> 
+        <div class="form-field input-pair">
           <input
             #shiftId
             type="text"
@@ -706,8 +704,12 @@
           <td>{{ item.id }}</td>
           <td>{{ item.name }}</td>
           <td>
-            <button 
-              style="background-color: rgba(133, 126, 126, 0.338); color: black;padding: 5px 15px;"
+            <button
+              style="
+                background-color: rgba(133, 126, 126, 0.338);
+                color: black;
+                padding: 5px 15px;
+              "
               (click)="deleteShift(item.id)"
               [disabled]="!canDelete()"
             >

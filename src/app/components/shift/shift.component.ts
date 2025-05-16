@@ -15,7 +15,7 @@ import { AuthService } from '../auth.service';
 export class ShiftComponent implements AfterViewInit {
   @ViewChild('shiftId') shiftIdInput!: ElementRef;
 
-  constructor(private http: HttpClient,private authService:AuthService) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   disableFields = true;
   deduct2Punch = false;
@@ -39,11 +39,9 @@ export class ShiftComponent implements AfterViewInit {
   totalPages = 0;
   paginatedUsers: any[] = [];
 
-    isEditMode: boolean = false; // ✅ Add this line
-    isNewMode: boolean = false; // if used
-    // hasEditPermission:boolean=false;
-    
-  
+  isEditMode: boolean = false; // ✅ Add this line
+  isNewMode: boolean = false; // if used
+  // hasEditPermission:boolean=false;
 
   shift: any = {
     Id: '',
@@ -109,7 +107,9 @@ export class ShiftComponent implements AfterViewInit {
   ngOnInit(): void {
     this.username = localStorage.getItem('username') || '';
     this.authService.getPageRights(this.username).subscribe((data) => {
-      const shiftRights = data.find((r: any) => r.name.toLowerCase() === 'shift configuration');
+      const shiftRights = data.find(
+        (r: any) => r.name.toLowerCase() === 'shift configuration'
+      );
       this.rights = shiftRights || {};
       this.authService.setRights('shift', this.rights); // Optional: store for other usage
     });
@@ -122,7 +122,7 @@ export class ShiftComponent implements AfterViewInit {
     }
   }
 
-  updatePaginatedUsers():void {
+  updatePaginatedUsers(): void {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     this.paginatedUsers = this.filteredList.slice(
       start,
@@ -144,7 +144,7 @@ export class ShiftComponent implements AfterViewInit {
       this.updatePaginatedUsers();
     }
   }
-  
+
   canView() {
     return this.rights.view;
   }
@@ -181,11 +181,12 @@ export class ShiftComponent implements AfterViewInit {
     });
   }
 
-  filterList():void{
+  filterList(): void {
     const term = this.searchTerm.toLowerCase().trim();
-    this.filteredList = this.shiftList.filter((item) =>
-      item.name.toLowerCase().includes(term) ||
-    item.id.toString().toLowerCase().includes(term)
+    this.filteredList = this.shiftList.filter(
+      (item) =>
+        item.name.toLowerCase().includes(term) ||
+        item.id.toString().toLowerCase().includes(term)
     );
     this.currentPage = 1;
     this.updatePaginatedUsers();
@@ -240,7 +241,7 @@ export class ShiftComponent implements AfterViewInit {
       minHoursRequired: item.minHoursRequired || false,
     };
 
-    this.isEditMode=true; // Set index here
+    this.isEditMode = true; // Set index here
     this.disableFields = false;
     this.setFocus();
   }
@@ -403,16 +404,16 @@ export class ShiftComponent implements AfterViewInit {
       const matchedItemIndex = this.filteredList.findIndex(
         (item: any) => item.id == this.shift.Id
       );
-  
+
       if (matchedItemIndex !== -1) {
         event.preventDefault(); // prevent focus change
         const matchedItem = this.filteredList[matchedItemIndex];
-  
+
         this.populateInputFields(matchedItem);
-  
+
         // ✅ Set selectedIndex so Save() knows it's an edit
         this.selectedIndex = matchedItemIndex;
-  
+
         // Optional: set edit mode flag if you use one
         this.isEditMode = true;
       } else {
@@ -422,7 +423,6 @@ export class ShiftComponent implements AfterViewInit {
       }
     }
   }
-  
 
   Save() {
     const finalShiftData = {
@@ -466,7 +466,6 @@ export class ShiftComponent implements AfterViewInit {
     });
   }
 }
-
 
 // onShiftIdKeyDown(event: KeyboardEvent): void {
 //   if (event.key === 'Tab' || event.key === 'Enter') {

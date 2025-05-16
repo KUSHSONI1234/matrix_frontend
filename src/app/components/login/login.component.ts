@@ -6,53 +6,53 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
-  standalone: true,
-  imports: [FormsModule, CommonModule, RouterLink],
+  imports: [FormsModule, CommonModule,RouterLink],
 })
 export class LoginComponent implements OnInit {
   @ViewChild('usernameInput') usernameInputRef!: ElementRef;
 
   user = { username: '', password: '' };
-  successMessage = '';
   errorMessage = '';
 
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    setTimeout(() => this.usernameInputRef?.nativeElement.focus(), 300);
+    // Directly focus without delay unless slow render
+    requestAnimationFrame(() => {
+      this.usernameInputRef?.nativeElement.focus();
+    });
   }
 
   onSubmit() {
-    if (!this.user.username.trim() || !this.user.password.trim()) {
-      this.errorMessage = 'Please enter both username and password.';
-      this.clearMessages();
+    const { username, password } = this.user;
+
+    if (!username.trim() || !password.trim()) {
+      this.showError('Please enter both username and password.');
       return;
     }
 
     this.authService.login(this.user).subscribe({
-      next: (res: any) => {
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('username', this.user.username);
+      next: ({ token }) => {
+        localStorage.setItem('token', token);
+        localStorage.setItem('username', username);
 
-        this.router.navigate(['/menu']); // Navigate immediately
+        this.router.navigate(['/menu']);
       },
       error: (err) => {
-        if (err.status === 500) {
-          this.errorMessage = 'Server error. Please try again later.';
-        } else {
-          this.errorMessage = 'Login Failed: Invalid credentials.';
-        }
-        this.clearMessages();
+        const message =
+          err.status === 500
+            ? 'Server error. Please try again later.'
+            : 'Login Failed: Invalid credentials.';
+        this.showError(message);
       },
     });
   }
 
-  clearMessages() {
-    setTimeout(() => {
-      this.errorMessage = '';
-      this.successMessage = '';
-    }, 4000);
+  private showError(message: string) {
+    this.errorMessage = message;
+    setTimeout(() => (this.errorMessage = ''), 4000);
   }
 }

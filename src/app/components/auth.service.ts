@@ -5,100 +5,92 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = 'http://192.168.28.44:5000/api/Auth'; // API URL for authentication
-  private aesKey = '1234567890123456'; // AES key for encryption
-  private tokenKey = 'token'; // Key for storing the token in localStorage
-  private rights: any = {};
+  private readonly authApiUrl = 'http://192.168.28.44:5000/api/Auth';
+  private readonly pageApiUrl = 'http://192.168.28.44:5038/api/pageRights';
+  private readonly aesKey = '1234567890123456';
+  private readonly tokenKey = 'token';
+
+  private rightsCache: Record<string, any> = {};
 
   constructor(private http: HttpClient) {}
 
-  // AES encryption method for passwords
-  private encryptAES(text: string): string {
-    const encrypted = CryptoJS.AES.encrypt(
-      text,
+  /** AES Encrypt Password */
+  private encryptAES(password: string): string {
+    return CryptoJS.AES.encrypt(
+      password,
       CryptoJS.enc.Utf8.parse(this.aesKey),
       {
         mode: CryptoJS.mode.CBC,
         iv: CryptoJS.enc.Utf8.parse('0000000000000000'),
         padding: CryptoJS.pad.Pkcs7,
       }
-    );
-    return encrypted.toString();
+    ).toString();
   }
 
-  // Get accessible pages based on the username
-  getAccessiblePages(username: string): Observable<string[]> {
-    const apiUrl = 'http://192.168.28.44:5038/api/pageRights/access-pages';
-    return this.http.get<string[]>(`${apiUrl}?username=${username}`);
-  }
-
-  // Fetch form data
-  getFormData(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl, {
-      withCredentials: false,
+  /** Login with Encrypted Password */
+  login(user: { username: string; password: string }): Observable<any> {
+    return this.http.post<any>(`${this.authApiUrl}/login`, {
+      username: user.username,
+      password: this.encryptAES(user.password),
     });
   }
 
-  // Delete user by username
-  deleteUser(username: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${username}`, {
-      responseType: 'text', // ← Allow plain text too
-    });
-  }
-
-  // Register user with encrypted password
-  register(user: any): Observable<string> {
-    const encryptedPassword = this.encryptAES(user.password);
+  /** Register with Encrypted Password */
+  register(user: { username: string; password: string }): Observable<string> {
     return this.http.post<string>(
-      `${this.apiUrl}/register`,
+      `${this.authApiUrl}/register`,
       {
         username: user.username,
-        password: encryptedPassword,
+        password: this.encryptAES(user.password),
       },
       {
         responseType: 'text' as 'json',
-        withCredentials: false,
       }
     );
   }
 
-  // Login user with encrypted password
-  login(user: any): Observable<any> {
-    const encryptedPassword = this.encryptAES(user.password);
-    return this.http.post<any>(
-      `${this.apiUrl}/login`,
-      {
-        username: user.username,
-        password: encryptedPassword,
-      },
-      {
-        withCredentials: false,
-      }
+  /** Fetch Accessible Pages */
+  getAccessiblePages(username: string): Observable<string[]> {
+    return this.http.get<string[]>(
+      `${this.pageApiUrl}/access-pages?username=${username}`
     );
   }
 
-  // Get token from localStorage
+  /** Get All Auth Form Data */
+  getFormData(): Observable<any[]> {
+    return this.http.get<any[]>(this.authApiUrl);
+  }
+
+  /** Delete a User by Username */
+  deleteUser(username: string): Observable<string> {
+    return this.http.delete(`${this.authApiUrl}/${username}`, {
+      responseType: 'text',
+    });
+  }
+
+  /** Get Token from Local Storage */
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
   }
 
-  // Remove token from localStorage
+  /** Clear Token from Local Storage */
   logout(): void {
     localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem('username');
+    localStorage.removeItem('allowedPages');
   }
 
-  // Get user rights for pages
+  /** Fetch Page Rights for User */
   getPageRights(username: string): Observable<any[]> {
-    const apiUrl = 'http://192.168.28.44:5038/api/pageRights/' + username;
-    return this.http.get<any[]>(apiUrl);
+    return this.http.get<any[]>(`${this.pageApiUrl}/${username}`);
   }
 
-  // Store rights locally for session use
-  setRights(page: string, permissions: any) {
-    this.rights[page] = permissions;
+  /** Cache User Rights */
+  setRights(page: string, permissions: any): void {
+    this.rightsCache[page] = permissions;
   }
 
   getRights(page: string): any {
-    return this.rights[page] || {};
+    return this.rightsCache[page] || {};
   }
 }

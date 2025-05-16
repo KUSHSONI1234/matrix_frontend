@@ -1,5 +1,5 @@
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../auth.service';
@@ -7,28 +7,28 @@ import { AuthService } from '../auth.service';
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './menu.component.html',
-  styleUrl: './menu.component.css'
+  styleUrls: ['./menu.component.css'],
+  imports: [CommonModule, FormsModule, RouterLink],
 })
-export class MenuComponent {
-  allowedPages: string[] = [];
-  username: string = localStorage.getItem("username") || '';
+export class MenuComponent implements OnInit {
+  allowedPages: Set<string> = new Set();
+  username: string = '';
 
   constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
-    const username = localStorage.getItem("username");
+    this.username = localStorage.getItem('username') || '';
 
-    if (username) {
-      this.authService.getAccessiblePages(username).subscribe((pages) => {
-        this.allowedPages = pages; // ✅ Set local variable
-        localStorage.setItem("allowedPages", JSON.stringify(pages));
-      });
-    }
+    if (!this.username) return;
+
+    this.authService.getAccessiblePages(this.username).subscribe((pages) => {
+      this.allowedPages = new Set(pages);
+      localStorage.setItem('allowedPages', JSON.stringify(pages));
+    });
   }
 
   canShow(page: string): boolean {
-    return this.allowedPages.includes(page);
+    return this.allowedPages.has(page);
   }
 }
