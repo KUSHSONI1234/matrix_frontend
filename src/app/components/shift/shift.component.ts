@@ -194,7 +194,7 @@ export class ShiftComponent implements AfterViewInit {
   // user.id.toString().toLowerCase().includes(term)
 
   populateInputFields(item: any, index?: number): void {
-    if (!this.canEdit()) return;
+    // Always populate data for viewing or editing
     this.shift = {
       Id: item.id || '',
       Name: item.name || '',
@@ -241,9 +241,13 @@ export class ShiftComponent implements AfterViewInit {
       minHoursRequired: item.minHoursRequired || false,
     };
 
-    this.isEditMode = true; // Set index here
-    this.disableFields = false;
-    this.setFocus();
+    this.selectedIndex = index ?? null;
+
+    // Set flags based on user rights
+    this.isEditMode = this.canEdit(); // true = enable save, false = view-only
+    this.disableFields = !this.canEdit(); // true = make fields readonly
+
+    this.setFocus(); // optionally focus next input
   }
 
   deleteShift(id: number): void {
@@ -406,18 +410,13 @@ export class ShiftComponent implements AfterViewInit {
       );
 
       if (matchedItemIndex !== -1) {
-        event.preventDefault(); // prevent focus change
+        event.preventDefault(); // prevent default tab/enter behavior
+
         const matchedItem = this.filteredList[matchedItemIndex];
+        this.populateInputFields(matchedItem, matchedItemIndex);
 
-        this.populateInputFields(matchedItem);
-
-        // ✅ Set selectedIndex so Save() knows it's an edit
-        this.selectedIndex = matchedItemIndex;
-
-        // Optional: set edit mode flag if you use one
-        this.isEditMode = true;
+        this.isEditMode = this.canEdit();
       } else {
-        // No matching record found
         this.selectedIndex = null;
         this.isEditMode = false;
       }
